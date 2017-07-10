@@ -26,7 +26,7 @@ from mypy.sametypes import is_same_type
 from mypy.exprtotype import expr_to_unanalyzed_type, TypeTranslationError
 from mypy.subtypes import is_subtype
 from mypy.plugin import Plugin, AnalyzerPluginInterface, AnalyzeTypeContext
-from mypy import nodes, messages
+from mypy import nodes, messages, experiments
 
 
 T = TypeVar('T')
@@ -144,7 +144,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], AnalyzerPluginInterface):
         self.is_typeshed_stub = is_typeshed_stub
 
     def visit_unbound_type(self, t: UnboundType) -> Type:
-        if t.optional:
+        if t.optional and experiments.STRICT_OPTIONAL:
             t.optional = False
             # We don't need to worry about double-wrapping Optionals or
             # wrapping Anys: Union simplification will take care of that.
